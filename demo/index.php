@@ -112,7 +112,7 @@ FORM: Brief-pinned editorial spread; stacked on mobile. No simulated features or
             <div class="brand"><span class="mark" aria-hidden="true">p</span><span>App Service Builder</span></div>
             <nav aria-label="Main navigation">
                 <a href="https://builderapps.azure.com/docs/">Docs</a>
-                <a href="https://github.com/Azure-Samples/app-service-builder-php">Source <span aria-hidden="true">&#8599;</span></a>
+                <a href="https://github.com/AzureAppService/app-service-builder-php">Source <span aria-hidden="true">&#8599;</span></a>
             </nav>
         </header>
         <main id="main" tabindex="-1">

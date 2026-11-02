@@ -23,7 +23,7 @@ access; this sample does not promise availability in any region.
 
 ## Run locally and test
 
-Fork [Azure-Samples/app-service-builder-php](https://github.com/Azure-Samples/app-service-builder-php/fork)
+Fork [AzureAppService/app-service-builder-php](https://github.com/AzureAppService/app-service-builder-php/fork)
 into your GitHub account, then replace `<your-github-account>`:
 
 ```sh
