@@ -7,6 +7,14 @@ The greeting includes the PHP runtime version to demonstrate PHP execution.
 An optional editorial-style showcase at `/demo` displays the same public
 greeting and runtime version. The original plain-text endpoints stay unchanged.
 
+## Preview
+
+![PHP showcase with a greeting, the actual runtime version, and a terracotta editorial layout](https://github.com/user-attachments/assets/bbf1ac67-2e6c-40a5-96ae-9dcc4fbed7b7)
+
+The screenshot shows `/demo/index.php` running locally in Microsoft Edge.
+Hosted `/demo` directory routing remains unqualified; see
+[Open the visual showcase](#open-the-visual-showcase).
+
 **App Service Builder is in Private Preview. Use this sample for development
 and testing, not production.** Local checks do not qualify the hosted build,
 nginx/PHP-FPM startup, or source authorization. Live qualification of this
