@@ -111,7 +111,7 @@ FORM: Brief-pinned editorial spread; stacked on mobile. No simulated features or
         <header class="sans">
             <div class="brand"><span class="mark" aria-hidden="true">p</span><span>App Service Builder</span></div>
             <nav aria-label="Main navigation">
-                <a href="https://builderapps.azure.com/docs/">Docs</a>
+                <a href="https://builder.appservice.azure.com/docs/">Docs</a>
                 <a href="https://github.com/AzureAppService/app-service-builder-php">Source <span aria-hidden="true">&#8599;</span></a>
             </nav>
         </header>
@@ -120,7 +120,7 @@ FORM: Brief-pinned editorial spread; stacked on mobile. No simulated features or
                 <div class="intro">
                     <h1 id="greeting-title"><span class="greeting"><?= $escapedGreeting ?></span>This is <em>PHP.</em></h1>
                     <p class="description sans">A small beginning, served by PHP. Explore a dependency-free web app and the App Service Builder GitHub-source workflow.</p>
-                    <a class="primary sans" href="https://builderapps.azure.com/docs/quickstarts/portal/">Explore the quickstart <span aria-hidden="true">&#8599;</span></a>
+                    <a class="primary sans" href="https://builder.appservice.azure.com/docs/quickstarts/portal/">Explore the quickstart <span aria-hidden="true">&#8599;</span></a>
                 </div>
                 <aside class="runtime" aria-label="PHP runtime">
                     <div class="runtime-top sans"><span>Server-side, simply.</span><span aria-hidden="true">&lt;?&gt;</span></div>

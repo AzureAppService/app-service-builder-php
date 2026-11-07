@@ -95,8 +95,8 @@ showcase does not claim that a hosted deployment or health check has succeeded.
 
 ## Deploy your fork with Portal
 
-See the [App Service Builder documentation](https://builderapps.azure.com/docs/)
-and [Portal quickstart](https://builderapps.azure.com/docs/quickstarts/portal/)
+See the [App Service Builder documentation](https://builder.appservice.azure.com/docs/)
+and [Portal quickstart](https://builder.appservice.azure.com/docs/quickstarts/portal/)
 for current preview onboarding and deployment steps.
 
 1. Open [App Service Builder Portal](https://builderapps.azure.com/) and sign in
@@ -140,7 +140,7 @@ The repository/source root is a **filesystem directory**. The component's
 default public mount `/` is a **URL path**, not a directory to select in
 Portal. Keep `index.php` and `health.php` at the packaged document root; PHP
 files nested under another source folder are not equivalent. See
-[runtime requirements](https://builderapps.azure.com/docs/reference/runtimes/)
+[runtime requirements](https://builder.appservice.azure.com/docs/reference/runtimes/)
 for the preview contract.
 
 The GitHub Actions workflow validates syntax, Composer metadata, and the
@@ -167,7 +167,7 @@ persists desired values without changing the running version; **Save and
 deploy** captures them in a new version. If you chose Save only, explicitly
 deploy a new version before checking the greeting. Activating a retained
 version uses its historical values. Do not override reserved `PORT`.
-See the [variables guide](https://builderapps.azure.com/docs/guides/variables/).
+See the [variables guide](https://builder.appservice.azure.com/docs/guides/variables/).
 
 ## Push updates and explicitly redeploy
 
@@ -197,7 +197,7 @@ rather than a public issue. This sample is licensed under [MIT](LICENSE.md).
 
 ## Resources
 
-- [App Service Builder documentation](https://builderapps.azure.com/docs/)
-- [Portal quickstart](https://builderapps.azure.com/docs/quickstarts/portal/)
-- [Samples catalog](https://builderapps.azure.com/docs/samples/)
-- [Runtime requirements](https://builderapps.azure.com/docs/reference/runtimes/)
+- [App Service Builder documentation](https://builder.appservice.azure.com/docs/)
+- [Portal quickstart](https://builder.appservice.azure.com/docs/quickstarts/portal/)
+- [Samples catalog](https://builder.appservice.azure.com/docs/samples/)
+- [Runtime requirements](https://builder.appservice.azure.com/docs/reference/runtimes/)

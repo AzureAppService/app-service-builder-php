@@ -13,6 +13,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PHP = os.environ.get("PHP_BIN", "php")
 
+class DocumentationTests(unittest.TestCase):
+    def test_readme_docs_host(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("https://builder.appservice.azure.com/docs/", readme)
+        self.assertNotIn("https://builderapps.azure.com/docs", readme)
+
 
 class HomeParser(HTMLParser):
     def __init__(self):
@@ -158,6 +164,10 @@ class HTTPTests(unittest.TestCase):
             )
             self.assertIsNone(response.getheader("Location"))
             content = response.read().decode("utf-8")
+            if method == "GET":
+                self.assertIn('href="https://builder.appservice.azure.com/docs/"', content)
+                self.assertIn('href="https://builder.appservice.azure.com/docs/quickstarts/portal/"', content)
+                self.assertNotIn("https://builderapps.azure.com/docs", content)
         finally:
             connection.close()
         if method == "HEAD":
