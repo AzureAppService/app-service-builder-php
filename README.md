@@ -3,16 +3,15 @@
 A dependency-free PHP 8.5 web app for learning the App Service Builder
 GitHub-source workflow. The app, Composer project, and `builder.yaml` are at
 the repository root; no other sample repository or external service is needed.
-The greeting includes the PHP runtime version to demonstrate PHP execution.
-An optional editorial-style showcase at `/demo` displays the same public
-greeting and runtime version. The original plain-text endpoints stay unchanged.
+The home page at `/` is an editorial-style PHP showcase displaying the public
+greeting and actual PHP runtime version. Health remains a plain-text endpoint.
 
 ## Preview
 
 ![PHP showcase with a greeting, the actual runtime version, and a terracotta editorial layout](https://github.com/user-attachments/assets/bbf1ac67-2e6c-40a5-96ae-9dcc4fbed7b7)
 
-The screenshot shows `/demo/index.php` running locally in Microsoft Edge.
-Hosted `/demo` directory routing remains unqualified; see
+The screenshot shows the PHP showcase running locally in Microsoft Edge.
+Hosted root routing remains unqualified; see
 [Open the visual showcase](#open-the-visual-showcase).
 
 **App Service Builder is in Private Preview. Use this sample for development
@@ -40,7 +39,6 @@ cd app-service-builder-php
 composer validate --strict --no-check-publish
 php -l index.php
 php -l health.php
-php -l demo/index.php
 python3 -m unittest discover -s tests -v
 php -S 127.0.0.1:0 -t .
 ```
@@ -51,9 +49,9 @@ No dependency installation is needed to run the app locally. Keep
 
 The tests start and stop their own PHP development servers on OS-assigned
 loopback ports. They check exact HTTP bodies/statuses, greeting configuration,
-and the source contract, plus the showcase's routes and HTML escaping. All tests
-are Python files under `tests/`; the sample's PHP entry points are `index.php`,
-`health.php`, and `demo/index.php`. If PHP 8.5 is not the default
+and the source contract, plus root HTML, removed-route 404s, and HTML escaping.
+All tests are Python files under `tests/`; the sample's PHP entry points are
+`index.php` and `health.php`. If PHP 8.5 is not the default
 `php` on your PATH, run the tests with `PHP_BIN=/path/to/php`.
 
 The final command starts a **local development fixture only**, not the hosted
@@ -67,35 +65,33 @@ curl -i "<local-url>/"
 curl -i "<local-url>/health.php"
 ```
 
-| Path | Status | Plain-text body |
+| Path | Status | Response |
 | --- | --- | --- |
-| `/` or `/index.php` | 200 | `App Service Builder / php-web: Hello (PHP 8.5.x)` |
-| `/health.php` | 200 | `healthy` |
+| `/` or `/index.php` | 200 | HTML showcase with the greeting and PHP runtime version, served directly without a redirect. |
+| `/health.php` | 200 | Plain text: `healthy` |
 | `/not-found` | 404 | Not found (body may differ between local and hosted servers) |
 
-`8.5.x` represents the actual PHP patch version. Successful response bodies
-end with exactly one newline by default; the health body is exactly
-`healthy\n`. Stop the development server with **Ctrl+C**.
+The page displays the actual PHP patch version. The health body is exactly
+`healthy\n`. Query strings do not change either response. Stop the development
+server with **Ctrl+C**.
 
 ### Open the visual showcase
 
-Open `<local-url>/demo` for the responsive, terracotta PHP showcase used for
+Open `<local-url>/` for the responsive, terracotta PHP showcase used for
 template previews. It renders the real `GREETING` value and PHP runtime version,
-with links to the original plain-text greeting, health endpoint, source, and
+with links to the health endpoint, source, and
 quickstart. Greeting text is HTML-escaped; it cannot add markup or scripts.
 There are no fonts, scripts, images, or packages to download at runtime.
 
-The showcase is a normal directory entry point at `demo/index.php`; `/demo/`
-and `/demo/index.php` also work locally. It needs no router, rewrite, custom
-build command, or startup override. It relies on the server's standard
-directory-index handling. Hosted directory routing remains unqualified until
-a live deployment is checked. If the hosted server does not resolve `/demo`,
-check `/demo/index.php` and the server logs rather than changing the root
-greeting or replacing nginx/PHP-FPM.
+The showcase is the root `index.php`; `/index.php` also works locally. It needs
+no router, rewrite, custom build command, or startup override. It relies on
+standard directory-index handling and returns `text/html; charset=utf-8`.
+Hosted root routing remains unqualified until a live deployment is checked.
+If the hosted server does not resolve `/`, check `/index.php` and the server
+logs rather than replacing nginx/PHP-FPM.
 
-The routes in the table above keep their exact plain-text responses; `/demo`
-is additive and returns `text/html; charset=utf-8`. The showcase does not claim
-that a hosted deployment or health check has succeeded.
+There is no separate showcase route or plain-text greeting endpoint. The
+showcase does not claim that a hosted deployment or health check has succeeded.
 
 ## Deploy your fork with Portal
 
@@ -138,7 +134,7 @@ the HTTP listener. **There is deliberately no `run.start`**: do not add
 `php -S`, stop nginx, or add startup workarounds. The root Composer project
 supports the platform's Oryx detection/build path without runtime packages.
 There is no custom build command or output directory.
-Keep the `demo/` directory alongside the root endpoints when packaging source.
+Keep the showcase's `index.php` and `health.php` at the source root when packaging.
 
 The repository/source root is a **filesystem directory**. The component's
 default public mount `/` is a **URL path**, not a directory to select in
@@ -162,8 +158,8 @@ development, stop the previous server and run:
 GREETING="Welcome" php -S 127.0.0.1:0 -t .
 ```
 
-Check the newly printed URL. The greeting should be
-`App Service Builder / php-web: Welcome (PHP 8.5.x)`, followed by a newline.
+Check the newly printed URL. The HTML page should display `Welcome` and the
+actual PHP version; the greeting is escaped before rendering.
 `/health.php` remains exactly `healthy\n`.
 
 For a deployed app, add `GREETING` in Portal **Variables**. **Save only**

@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PHP = os.environ.get("PHP_BIN", "php")
 
 
-class DemoParser(HTMLParser):
+class HomeParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.greeting = []
@@ -98,16 +98,13 @@ class HTTPTests(unittest.TestCase):
             connection.close()
         self.assertIsNone(process.poll(), "Owned PHP server stopped unexpectedly")
 
-    def greeting(self, value="Hello"):
-        return f"App Service Builder / php-web: {value} (PHP {self.version})\n"
-
     def test_unset_greeting(self):
         with development_server() as server:
-            self.assert_response(server, "/", 200, self.greeting())
+            self.assert_home(server, "/", "Hello")
 
     def test_direct_index(self):
         with development_server() as server:
-            self.assert_response(server, "/index.php", 200, self.greeting())
+            self.assert_home(server, "/index.php", "Hello")
 
     def test_exact_health_body(self):
         with development_server() as server:
@@ -115,30 +112,29 @@ class HTTPTests(unittest.TestCase):
 
     def test_custom_greeting_does_not_change_health(self):
         with development_server("Welcome") as server:
-            self.assert_response(server, "/", 200, self.greeting("Welcome"))
+            self.assert_home(server, "/", "Welcome")
             self.assert_response(server, "/health.php", 200, "healthy\n")
 
     def test_empty_greeting_uses_default(self):
         with development_server("") as server:
-            self.assert_response(server, "/", 200, self.greeting())
+            self.assert_home(server, "/", "Hello")
 
     def test_zero_greeting_is_not_empty(self):
         with development_server("0") as server:
-            self.assert_response(server, "/", 200, self.greeting("0"))
+            self.assert_home(server, "/", "0")
 
     def test_whitespace_greeting_is_preserved(self):
         with development_server(" ") as server:
-            self.assert_response(server, "/", 200, self.greeting(" "))
+            self.assert_home(server, "/", " ")
 
-    def test_utf8_greeting_is_plain_text(self):
+    def test_utf8_greeting_is_preserved_in_html(self):
         with development_server("Caf\u00e9 <sample>") as server:
-            self.assert_response(
-                server, "/", 200, self.greeting("Caf\u00e9 <sample>")
-            )
+            self.assert_home(server, "/", "Caf\u00e9 <sample>")
 
     def test_query_does_not_change_response(self):
         with development_server() as server:
-            self.assert_response(server, "/?GREETING=ignored", 200, self.greeting())
+            self.assert_home(server, "/?GREETING=ignored", "Hello")
+            self.assert_home(server, "/index.php?GREETING=ignored", "Hello")
             self.assert_response(server, "/health.php?check=1", 200, "healthy\n")
 
     def test_unknown_path(self):
@@ -149,7 +145,7 @@ class HTTPTests(unittest.TestCase):
         with development_server() as server:
             self.assert_response(server, "/health.php", 200, "", method="HEAD")
 
-    def assert_demo(self, server, path, greeting, method="GET"):
+    def assert_home(self, server, path, greeting, method="GET"):
         process, port = server
         self.assertIsNone(process.poll())
         connection = HTTPConnection("127.0.0.1", port, timeout=5)
@@ -160,51 +156,64 @@ class HTTPTests(unittest.TestCase):
             self.assertEqual(
                 response.getheader("Content-Type"), "text/html; charset=utf-8"
             )
+            self.assertIsNone(response.getheader("Location"))
             content = response.read().decode("utf-8")
         finally:
             connection.close()
         if method == "HEAD":
             self.assertEqual(content, "")
             return
-        parser = DemoParser()
+        parser = HomeParser()
         parser.feed(content)
         self.assertEqual("".join(parser.greeting), greeting)
         self.assertIn(f'<span class="runtime-version">{self.version}</span>', content)
-        self.assertIn('href="/"', content)
+        self.assertIn('<html lang="en">', content)
+        self.assertIn('id="greeting-title"', content)
         self.assertIn('href="/health.php"', content)
+        self.assertNotIn("View plain text", content)
+        self.assertNotIn("/demo", content)
         self.assertNotIn("not-part-of-the-response", content)
         return content
 
-    def test_demo_routes(self):
+    def test_home_routes(self):
         with development_server() as server:
-            for path in ("/demo", "/demo/", "/demo/index.php", "/demo?GREETING=ignored"):
+            for path in ("/", "/index.php", "/?scoutTheme=light"):
                 with self.subTest(path=path):
-                    self.assert_demo(server, path, "Hello")
+                    self.assert_home(server, path, "Hello")
 
-    def test_demo_greeting_configuration(self):
+    def test_home_greeting_configuration(self):
         for value, expected in ((None, "Hello"), ("", "Hello"), ("Welcome", "Welcome"),
                                 ("0", "0"), (" ", " ")):
             with self.subTest(greeting=value), development_server(value) as server:
-                self.assert_demo(server, "/demo", expected)
-                self.assert_response(server, "/", 200, self.greeting(expected))
+                self.assert_home(server, "/", expected)
+                self.assert_home(server, "/index.php", expected)
                 self.assert_response(server, "/health.php", 200, "healthy\n")
 
-    def test_demo_escapes_public_greeting(self):
+    def test_home_escapes_public_greeting(self):
         greeting = 'Caf\u00e9 <script>alert("sample")</script> & \'friends\''
         with development_server(greeting) as server:
-            content = self.assert_demo(server, "/demo", greeting)
+            content = self.assert_home(server, "/", greeting)
             self.assertNotIn("<script>", content)
             self.assertIn("&lt;script&gt;", content)
             self.assertIn("&amp;", content)
-            self.assert_response(server, "/", 200, self.greeting(greeting))
+            self.assertIn("&quot;", content)
+            self.assertIn("&#039;", content)
 
-    def test_demo_head(self):
+    def test_home_head_and_post(self):
         with development_server() as server:
-            self.assert_demo(server, "/demo", "Hello", method="HEAD")
+            self.assert_home(server, "/", "Hello", method="HEAD")
+            self.assert_home(server, "/index.php", "Hello", method="HEAD")
+            self.assert_home(server, "/", "Hello", method="POST")
 
-    def test_unknown_demo_path(self):
+    def test_removed_routes(self):
         with development_server() as server:
-            self.assert_response(server, "/demo/not-found", 404, "Not found\n")
+            for path in ("/demo", "/demo/", "/demo/index.php",
+                         "/demo?scoutTheme=light", "/demo/not-found",
+                         "/index.php/not-found"):
+                with self.subTest(path=path):
+                    self.assert_response(server, path, 404, "Not found\n")
+            self.assert_response(server, "/demo", 404, "Not found\n", method="POST")
+            self.assert_response(server, "/demo", 404, "", method="HEAD")
 
 
 class SourceContractTests(unittest.TestCase):
@@ -234,7 +243,8 @@ class SourceContractTests(unittest.TestCase):
             for path in ROOT.rglob("*.php")
             if not path.is_relative_to(ROOT / "vendor")
         }
-        self.assertEqual(endpoints, {"index.php", "health.php", "demo/index.php"})
+        self.assertEqual(endpoints, {"index.php", "health.php"})
+        self.assertFalse((ROOT / "demo").exists())
 
 
 if __name__ == "__main__":

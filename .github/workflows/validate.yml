@@ -27,6 +27,6 @@ jobs:
       - name: Validate Composer project
         run: composer validate --strict --no-check-publish
       - name: Check PHP syntax
-        run: php -l index.php && php -l health.php && php -l demo/index.php
+        run: php -l index.php && php -l health.php
       - name: Test local development fixture and source contract
         run: python3 -m unittest discover -s tests -v
