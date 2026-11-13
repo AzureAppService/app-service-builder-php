@@ -8,9 +8,12 @@ greeting and actual PHP runtime version. Health remains a plain-text endpoint.
 
 ## Preview
 
-![PHP showcase with a greeting, the actual runtime version, and a terracotta editorial layout](https://github.com/user-attachments/assets/bbf1ac67-2e6c-40a5-96ae-9dcc4fbed7b7)
+![PHP root page with the public greeting, actual local runtime version, terracotta specimen, and in-page health check](docs/images/sample.png)
 
 The screenshot shows the PHP showcase running locally in Microsoft Edge.
+**Check app health** displays PHP liveness here without leaving the page;
+`/health.php` remains the plain-text machine endpoint. The greeting instructions
+explain saving and deploying a new version of your own Builder App.
 Hosted root routing remains unqualified; see
 [Open the visual showcase](#open-the-visual-showcase).
 

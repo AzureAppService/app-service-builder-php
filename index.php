@@ -36,6 +36,10 @@ FORM: Brief-pinned editorial spread; stacked on mobile. No simulated features or
     <meta name="description" content="A dependency-free PHP sample for the App Service Builder GitHub-source workflow.">
     <title>PHP / App Service Builder</title>
     <style>
+        .health-button { font: inherit; color: inherit; background: transparent; border: 1px solid currentColor; padding: 10px 14px; cursor: pointer; }
+        .health-button:focus-visible { outline: 3px solid #a8402d; outline-offset: 5px; }
+        .health-button:disabled { cursor: wait; opacity: .7; }
+        #health-status { font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
         :root {
             color-scheme: light;
             --paper: #f6f2e9;
@@ -111,7 +115,7 @@ FORM: Brief-pinned editorial spread; stacked on mobile. No simulated features or
         <header class="sans">
             <div class="brand"><span class="mark" aria-hidden="true">p</span><span>App Service Builder</span></div>
             <nav aria-label="Main navigation">
-                <a href="https://builder.appservice.azure.com/docs/">Docs</a>
+                <a href="https://builder.appservice.azure.com/docs/">Builder documentation</a>
                 <a href="https://github.com/AzureAppService/app-service-builder-php">Source <span aria-hidden="true">&#8599;</span></a>
             </nav>
         </header>
@@ -120,7 +124,7 @@ FORM: Brief-pinned editorial spread; stacked on mobile. No simulated features or
                 <div class="intro">
                     <h1 id="greeting-title"><span class="greeting"><?= $escapedGreeting ?></span>This is <em>PHP.</em></h1>
                     <p class="description sans">A small beginning, served by PHP. Explore a dependency-free web app and the App Service Builder GitHub-source workflow.</p>
-                    <a class="primary sans" href="https://builder.appservice.azure.com/docs/quickstarts/portal/">Explore the quickstart <span aria-hidden="true">&#8599;</span></a>
+                    <a class="primary sans" href="https://builder.appservice.azure.com/docs/quickstarts/portal/">Builder quickstart <span aria-hidden="true">&#8599;</span></a>
                 </div>
                 <aside class="runtime" aria-label="PHP runtime">
                     <div class="runtime-top sans"><span>Server-side, simply.</span><span aria-hidden="true">&lt;?&gt;</span></div>
@@ -132,8 +136,9 @@ FORM: Brief-pinned editorial spread; stacked on mobile. No simulated features or
                 <h2 id="response-title" class="sans">The greeting</h2>
                 <pre>App Service Builder / php-web: <?= $escapedGreeting ?> (PHP <?= $escapedVersion ?>)
 </pre>
-                <a class="sans" href="/health.php">Check health <span aria-hidden="true">&#8599;</span></a>
+                <button class="sans health-button" type="button" data-health-check data-health-path="/health.php">Check app health</button>
             </section>
+            <p id="health-status" class="sans" role="status" aria-live="polite">Checks PHP liveness, not Azure services.</p>
             <section class="details" aria-label="About this sample">
                 <div>
                     <h2>Small by design.</h2>
@@ -141,7 +146,7 @@ FORM: Brief-pinned editorial spread; stacked on mobile. No simulated features or
                 </div>
                 <div>
                     <h2>Make it your greeting.</h2>
-                    <p class="sans">Set the public <code>GREETING</code> variable to change the message. Unset or empty, it starts with Hello.</p>
+                    <p class="sans">Set the public <code>GREETING</code> variable in your Builder App, then save and deploy a new version. Unset or empty, it starts with Hello. Never use a secret as your greeting.</p>
                 </div>
                 <div>
                     <h2>A simple check.</h2>
@@ -154,5 +159,23 @@ FORM: Brief-pinned editorial spread; stacked on mobile. No simulated features or
             <p>Private Preview. For development and testing, not production.</p>
         </footer>
     </div>
+    <script>
+        const button = document.querySelector('[data-health-check]');
+        const status = document.querySelector('#health-status');
+        button.addEventListener('click', async () => {
+            button.disabled = true;
+            status.textContent = 'Checking this app...';
+            try {
+                const response = await fetch('/health.php', { cache: 'no-store', signal: AbortSignal.timeout(5000) });
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                if ((await response.text()).trim() !== 'healthy') throw new Error('Unexpected health response');
+                status.textContent = 'Healthy: /health.php returned HTTP 200 and healthy. PHP liveness only.';
+            } catch (error) {
+                status.textContent = 'Health check failed: ' + error.message + '. Retry the check.';
+            } finally {
+                button.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>

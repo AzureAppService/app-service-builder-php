@@ -203,7 +203,10 @@ class HTTPTests(unittest.TestCase):
         greeting = 'Caf\u00e9 <script>alert("sample")</script> & \'friends\''
         with development_server(greeting) as server:
             content = self.assert_home(server, "/", greeting)
-            self.assertNotIn("<script>", content)
+            self.assertNotIn("<script>alert", content)
+            self.assertEqual(content.count("<script>"), 1)
+            self.assertIn('data-health-path="/health.php"', content)
+            self.assertIn('role="status" aria-live="polite"', content)
             self.assertIn("&lt;script&gt;", content)
             self.assertIn("&amp;", content)
             self.assertIn("&quot;", content)
