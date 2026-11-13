@@ -3,12 +3,12 @@
 A dependency-free PHP 8.5 web app for learning the App Service Builder
 GitHub-source workflow. The app, Composer project, and `builder.yaml` are at
 the repository root; no other sample repository or external service is needed.
-The home page at `/` is an editorial-style PHP showcase displaying the public
+The home page at `/` is an soft modern PHP introduction displaying the public
 greeting and actual PHP runtime version. Health remains a plain-text endpoint.
 
 ## Preview
 
-![PHP root page with the public greeting, actual local runtime version, terracotta specimen, and in-page health check](docs/images/sample.png)
+![PHP sample with official technology and Builder identity, inline health and source guidance](docs/images/sample.png)
 
 The screenshot shows the PHP showcase running locally in Microsoft Edge.
 **Check app health** displays PHP liveness here without leaving the page;
@@ -206,3 +206,7 @@ rather than a public issue. This sample is licensed under [MIT](LICENSE.md).
 - [Runtime requirements](https://builder.appservice.azure.com/docs/reference/runtimes/)
 
 The product mark uses the supplied App Service Builder asset in `assets/AppServiceBuilder.svg`. Its SVG is inlined in the root page to preserve the existing routes and security policy. Keep the inline copy and asset in sync when updating the logo.
+
+## Technology identity
+
+The root UI follows the Builder sample family while retaining this sample’s existing learning objective and real health behavior. It includes the official PHP logo, a clearly labeled language documentation link, and separate Builder documentation. Original logo source is retained under `assets/`.
